@@ -17,29 +17,14 @@ export function AuthProvider({ children }) {
 
   // ── Deliveries State ──
   const [deliveries, setDeliveries] = useState(() => {
+    const migrated = localStorage.getItem('eco-deliveries-migrated');
+    if (!migrated) {
+      localStorage.removeItem('eco-deliveries');
+      localStorage.setItem('eco-deliveries-migrated', 'true');
+      return [];
+    }
     const saved = localStorage.getItem('eco-deliveries');
-    if (saved) return JSON.parse(saved);
-    return [
-      {
-        id: 'del-mock-1',
-        centroNombre: 'EcoPunto Central',
-        fecha: '2026-05-25T14:30:00.000Z',
-        materiales: [
-          { id: 'plastico', cantidad: 2.5, unidad: 'kg' },
-          { id: 'carton', cantidad: 5.0, unidad: 'kg' }
-        ],
-        estado: 'confirmada'
-      },
-      {
-        id: 'del-mock-2',
-        centroNombre: 'ReciVerde Norte',
-        fecha: '2026-05-26T09:15:00.000Z',
-        materiales: [
-          { id: 'plastico', cantidad: 1.2, unidad: 'kg' }
-        ],
-        estado: 'confirmada'
-      }
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
