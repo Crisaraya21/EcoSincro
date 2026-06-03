@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
-export default function Register() {
+export default function RegisterReceptor() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -10,18 +10,27 @@ export default function Register() {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [error, setError] = useState('');
 
   // ── Submit ──
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!nombre || !email || !password) {
-      setError('Por favor completa todos los campos.');
+    if (!nombre || !email || !password || !direccion) {
+      setError('Por favor completa todos los campos obligatorios.');
       return;
     }
     try {
-      register(nombre, email, password, 'ciudadano');
-      navigate('/ciudadano/buscar');
+      // Mock coordinates (San José, Costa Rica)
+      const mockCoords = { lat: 9.9281, lng: -84.0907 };
+      
+      register(nombre, email, password, 'receptor', {
+        direccion,
+        telefono,
+        ...mockCoords
+      });
+      navigate('/receptor/dashboard');
     } catch (err) {
       setError(err.message);
     }
@@ -29,9 +38,9 @@ export default function Register() {
 
   return (
     <div className="login-page">
-      <div className="login-card" style={{ maxWidth: '420px', width: '90%' }}>
-        <h1>Crear Cuenta</h1>
-        <p className="subtitle">Únete a la red de reciclaje inteligente</p>
+      <div className="login-card" style={{ maxWidth: '450px', width: '90%' }}>
+        <h1>Crear Cuenta - Receptor</h1>
+        <p className="subtitle">Registra tu centro de acopio</p>
 
         {error && (
           <div className="error-alert" style={{
@@ -51,14 +60,14 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
           
-          {/* Nombre Completo */}
+          {/* Nombre del Centro */}
           <div className="form-group">
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
-              Nombre Completo
+              Nombre del Centro de Acopio *
             </label>
             <input
               type="text"
-              placeholder="Juan Pérez"
+              placeholder="EcoPunto Central"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
@@ -70,11 +79,11 @@ export default function Register() {
           {/* Email */}
           <div className="form-group">
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
-              Correo Electrónico
+              Correo Institucional *
             </label>
             <input
               type="email"
-              placeholder="nombre@correo.com"
+              placeholder="centro@acopio.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -86,7 +95,7 @@ export default function Register() {
           {/* Password */}
           <div className="form-group">
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
-              Contraseña
+              Contraseña *
             </label>
             <input
               type="password"
@@ -99,7 +108,36 @@ export default function Register() {
             />
           </div>
 
+          {/* Dirección */}
+          <div className="form-group">
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
+              Dirección Física *
+            </label>
+            <input
+              type="text"
+              placeholder="Av. Central #45, San José Centro"
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+              required
+              className="search-input"
+              style={{ margin: 0 }}
+            />
+          </div>
 
+          {/* Teléfono */}
+          <div className="form-group">
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
+              Teléfono de Contacto
+            </label>
+            <input
+              type="tel"
+              placeholder="2222-3344"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+              className="search-input"
+              style={{ margin: 0 }}
+            />
+          </div>
 
           {/* Auto-assigned Role Badge */}
           <div className="form-group" style={{ marginBottom: 'var(--sp-2)' }}>
@@ -118,7 +156,7 @@ export default function Register() {
               alignItems: 'center',
               justifyContent: 'space-between'
             }}>
-              <span>👤 Ciudadano</span>
+              <span>🏭 Centro de Acopio</span>
               <span style={{ fontSize: '0.72rem', fontWeight: '600', background: 'var(--white)', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--eco-300)' }}>Automático</span>
             </div>
           </div>
@@ -131,7 +169,7 @@ export default function Register() {
         {/* Link to Login */}
         <p style={{ marginTop: 'var(--sp-5)', fontSize: '0.85rem', color: 'var(--gray-500)' }}>
           ¿Ya tienes una cuenta?{' '}
-          <Link to="/" style={{ color: 'var(--eco-600)', fontWeight: '600', textDecoration: 'underline' }}>
+          <Link to="/receptor/login" style={{ color: 'var(--eco-600)', fontWeight: '600', textDecoration: 'underline' }}>
             Inicia sesión aquí
           </Link>
         </p>

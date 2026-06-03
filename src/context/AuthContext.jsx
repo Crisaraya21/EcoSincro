@@ -42,6 +42,19 @@ export function AuthProvider({ children }) {
         password: '123',
         distrito: 'San José',
         rol: 'ciudadano'
+      },
+      {
+        nombre: 'EcoPunto Central',
+        email: 'receptor@eco.com',
+        password: '123',
+        direccion: 'Av. Central #45, San José Centro',
+        lat: 9.9340,
+        lng: -84.0870,
+        rol: 'receptor',
+        certificado: true,
+        materiales: ['plastico', 'vidrio', 'carton'],
+        horario: 'Lun–Vie 8:00–17:00',
+        telefono: '2222-3344'
       }
     ];
   });
@@ -67,34 +80,47 @@ export function AuthProvider({ children }) {
   const isAuthenticated = !!currentUser;
 
   // ── Authentication Actions ──
-  const login = (email, password) => {
+  const login = (email, password, rolEsperado = null) => {
     const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user || user.password !== password) {
       throw new Error('El correo electrónico o la contraseña ingresados no coinciden con ningún registro existente.');
     }
-    // Only citizens allowed in citizen portal (extensible in the future)
-    if (user.rol !== 'ciudadano') {
-      throw new Error('Esta cuenta no pertenece al perfil Ciudadano.');
+    // Validate role if specified
+    if (rolEsperado && user.rol !== rolEsperado) {
+      throw new Error(`Esta cuenta no pertenece al perfil ${rolEsperado === 'ciudadano' ? 'Ciudadano' : 'Receptor'}.`);
     }
     setCurrentUser(user);
     return user;
   };
 
-  const register = (nombre, email, password, distrito = 'Ubicación en vivo') => {
+  const register = (nombre, email, password, rol = 'ciudadano', datosAdicionales = {}) => {
     const yaExiste = users.some((u) => u.email.toLowerCase() === email.toLowerCase());
     if (yaExiste) {
       throw new Error('El correo electrónico ya está registrado por otra cuenta en la plataforma.');
     }
-    const nuevoUsuario = {
+    
+    let nuevoUsuario = {
       nombre,
       email,
       password,
-      distrito,
-      rol: 'ciudadano' // Automatic Citizen Role assignment
+      rol
     };
+
+    // Add role-specific data
+    if (rol === 'ciudadano') {
+      nuevoUsuario.distrito = datosAdicionales.distrito || 'Ubicación en vivo';
+    } else if (rol === 'receptor') {
+      nuevoUsuario.direccion = datosAdicionales.direccion || '';
+      nuevoUsuario.lat = datosAdicionales.lat || 0;
+      nuevoUsuario.lng = datosAdicionales.lng || 0;
+      nuevoUsuario.certificado = false;
+      nuevoUsuario.materiales = [];
+      nuevoUsuario.horario = 'Lun–Vie 8:00–17:00';
+      nuevoUsuario.telefono = datosAdicionales.telefono || '';
+    }
     
     setUsers((prev) => [...prev, nuevoUsuario]);
-    setCurrentUser(nuevoUsuario); // Redirect and login directly
+    setCurrentUser(nuevoUsuario);
     return nuevoUsuario;
   };
 
@@ -110,6 +136,10 @@ export function AuthProvider({ children }) {
     setDeliveries((prev) => [delivery, ...prev]);
   };
 
+  const getReceptores = () => {
+    return users.filter((u) => u.rol === 'receptor');
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -121,7 +151,8 @@ export function AuthProvider({ children }) {
         addDelivery,
         login,
         register,
-        logout
+        logout,
+        getReceptores
       }}
     >
       {children}

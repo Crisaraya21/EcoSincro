@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
-export default function Login() {
+export default function LoginReceptor() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
   // ── States ──
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('receptor@eco.com');
+  const [password, setPassword] = useState('123');
   const [error, setError] = useState('');
 
   // ── Submit ──
@@ -19,8 +19,8 @@ export default function Login() {
       return;
     }
     try {
-      login(email, password, 'ciudadano');
-      navigate('/ciudadano/buscar');
+      login(email, password, 'receptor');
+      navigate('/receptor/dashboard');
     } catch (err) {
       setError(err.message);
     }
@@ -30,7 +30,7 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card" style={{ maxWidth: '400px', width: '90%' }}>
         <h1>EcoSincro</h1>
-        <p className="subtitle">Plataforma de reciclaje inteligente</p>
+        <p className="subtitle">Panel de Centro de Acopio</p>
 
         {error && (
           <div className="error-alert" style={{
@@ -52,11 +52,11 @@ export default function Login() {
           {/* Email */}
           <div className="form-group">
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: 'var(--gray-600)', marginBottom: 'var(--sp-1)' }}>
-              Correo Electrónico
+              Correo Institucional
             </label>
             <input
               type="email"
-              placeholder="nombre@correo.com"
+              placeholder="centro@acopio.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -89,7 +89,7 @@ export default function Login() {
         {/* Link to Register */}
         <p style={{ marginTop: 'var(--sp-5)', fontSize: '0.85rem', color: 'var(--gray-500)' }}>
           ¿No tienes una cuenta?{' '}
-          <Link to="/register" style={{ color: 'var(--eco-600)', fontWeight: '600', textDecoration: 'underline' }}>
+          <Link to="/receptor/register" style={{ color: 'var(--eco-600)', fontWeight: '600', textDecoration: 'underline' }}>
             Regístrate aquí
           </Link>
         </p>
@@ -98,23 +98,24 @@ export default function Login() {
         <div style={{
           marginTop: 'var(--sp-6)',
           padding: 'var(--sp-3)',
-          background: 'var(--gray-50)',
+          background: 'var(--eco-50)',
           borderRadius: 'var(--r-md)',
-          border: '1px solid var(--gray-200)',
-          fontSize: '0.78rem',
-          color: 'var(--gray-500)',
-          lineHeight: '1.4'
+          border: '1px solid var(--eco-200)',
+          fontSize: '0.75rem',
+          color: 'var(--eco-700)'
         }}>
-          💡 <strong>Prueba rápido:</strong><br />
-          Email: <code style={{ background: 'var(--white)', padding: '1px 4px', borderRadius: '3px' }}>ciudadano@eco.com</code><br />
-          Clave: <code style={{ background: 'var(--white)', padding: '1px 4px', borderRadius: '3px' }}>123</code>
+          <strong>Cuenta de prueba:</strong>
+          <br />
+          📧 receptor@eco.com
+          <br />
+          🔑 123
         </div>
 
-        {/* Link to Receptor */}
+        {/* Link back to citizen login */}
         <p style={{ marginTop: 'var(--sp-5)', fontSize: '0.85rem', color: 'var(--gray-500)', textAlign: 'center' }}>
-          ¿Eres receptor?{' '}
-          <Link to="/receptor/login" style={{ color: 'var(--eco-600)', fontWeight: '600' }}>
-            Acceder como Centro de Acopio
+          ¿Eres ciudadano?{' '}
+          <Link to="/" style={{ color: 'var(--eco-600)', fontWeight: '600' }}>
+            Acceder como ciudadano
           </Link>
         </p>
       </div>
