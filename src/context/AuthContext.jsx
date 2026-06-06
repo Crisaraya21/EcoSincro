@@ -55,6 +55,16 @@ export function AuthProvider({ children }) {
         materiales: ['plastico', 'vidrio', 'carton'],
         horario: 'Lun–Vie 8:00–17:00',
         telefono: '2222-3344'
+      },
+      {
+        nombre: 'Industrias EcoDemo S.A.',
+        email: 'empresa@eco.com',
+        password: '123',
+        rol: 'empresa',
+        responsable: 'Ana Rodríguez',
+        cedula: '3-101-000001',
+        sector: 'Manufactura',
+        perfilResiduos: []
       }
     ];
   });
@@ -98,7 +108,7 @@ export function AuthProvider({ children }) {
     if (yaExiste) {
       throw new Error('El correo electrónico ya está registrado por otra cuenta en la plataforma.');
     }
-    
+
     let nuevoUsuario = {
       nombre,
       email,
@@ -117,8 +127,13 @@ export function AuthProvider({ children }) {
       nuevoUsuario.materiales = [];
       nuevoUsuario.horario = 'Lun–Vie 8:00–17:00';
       nuevoUsuario.telefono = datosAdicionales.telefono || '';
+    } else if (rol === 'empresa') {
+      nuevoUsuario.responsable = datosAdicionales.responsable || '';
+      nuevoUsuario.cedula = datosAdicionales.cedula || '';
+      nuevoUsuario.sector = datosAdicionales.sector || '';
+      nuevoUsuario.perfilResiduos = [];
     }
-    
+
     setUsers((prev) => [...prev, nuevoUsuario]);
     setCurrentUser(nuevoUsuario);
     return nuevoUsuario;
@@ -140,23 +155,33 @@ export function AuthProvider({ children }) {
     return users.filter((u) => u.rol === 'receptor');
   };
 
+  const updateEmpresaResiduos = (perfilResiduos) => {
+    setUsers((prev) =>
+        prev.map((u) =>
+            u.email === currentUser?.email ? { ...u, perfilResiduos } : u
+        )
+    );
+    setCurrentUser((prev) => ({ ...prev, perfilResiduos }));
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        currentUser,
-        theme,
-        toggleTheme,
-        deliveries,
-        addDelivery,
-        login,
-        register,
-        logout,
-        getReceptores
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider
+          value={{
+            isAuthenticated,
+            currentUser,
+            theme,
+            toggleTheme,
+            deliveries,
+            addDelivery,
+            login,
+            register,
+            logout,
+            getReceptores,
+            updateEmpresaResiduos
+          }}
+      >
+        {children}
+      </AuthContext.Provider>
   );
 }
 
