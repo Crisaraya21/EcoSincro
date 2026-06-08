@@ -110,13 +110,7 @@ export default function Login() {
           Clave: <code style={{ background: 'var(--white)', padding: '1px 4px', borderRadius: '3px' }}>123</code>
         </div>
 
-        {/* Link to Receptor */}
-        <p style={{ marginTop: 'var(--sp-5)', fontSize: '0.85rem', color: 'var(--gray-500)', textAlign: 'center' }}>
-          ¿Eres receptor?{' '}
-          <Link to="/receptor/login" style={{ color: 'var(--eco-600)', fontWeight: '600' }}>
-            Acceder como Centro de Acopio
-          </Link>
-        </p>
+
       </div>
     </div>
   );

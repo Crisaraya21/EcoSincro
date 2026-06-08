@@ -7,18 +7,6 @@ const roles = [
         titulo: 'Ciudadano',
         desc: 'Recicla y contribuye',
     },
-    {
-        to: '/receptor/login',
-        icono: '🏭',
-        titulo: 'Centro de Acopio',
-        desc: 'Gestiona tu centro',
-    },
-    {
-        to: '/empresa/login',
-        icono: '🏢',
-        titulo: 'Empresa',
-        desc: 'Gestiona tus residuos',
-    },
 ];
 
 export default function RoleSelector() {
@@ -35,7 +23,7 @@ export default function RoleSelector() {
                     ¿Con qué perfil deseas ingresar?
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--sp-4)', marginBottom: 'var(--sp-6)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 'var(--sp-4)', marginBottom: 'var(--sp-6)' }}>
                     {roles.map((r) => (
                         <Link
                             key={r.to}
