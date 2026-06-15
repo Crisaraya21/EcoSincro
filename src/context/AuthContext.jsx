@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -89,6 +89,9 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!currentUser;
 
+  // ── Notifications State ──
+  const [notifications, setNotifications] = useState([]);
+
   // ── Authentication Actions ──
   const login = (email, password, rolEsperado = null) => {
     const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
@@ -164,6 +167,25 @@ export function AuthProvider({ children }) {
     setCurrentUser((prev) => ({ ...prev, perfilResiduos }));
   };
 
+  // ── Notification Actions ──
+  const addNotification = useCallback((notification) => {
+    setNotifications((prev) => [notification, ...prev]);
+  }, []);
+
+  const markAsRead = useCallback((id) => {
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === id ? { ...notif, leida: true } : notif
+      )
+    );
+  }, []);
+
+  const markAllAsRead = useCallback(() => {
+    setNotifications((prev) =>
+      prev.map((notif) => ({ ...notif, leida: true }))
+    );
+  }, []);
+
   return (
       <AuthContext.Provider
           value={{
@@ -173,6 +195,10 @@ export function AuthProvider({ children }) {
             toggleTheme,
             deliveries,
             addDelivery,
+            notifications,
+            addNotification,
+            markAsRead,
+            markAllAsRead,
             login,
             register,
             logout,

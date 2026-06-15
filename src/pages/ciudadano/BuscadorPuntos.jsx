@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   TIPOS_MATERIAL,
   buscarCentros,
   nombreMaterial,
 } from '../../services/ciudadanoService';
+
 
 const PROVINCIAS_CANTONES = [
   {
@@ -135,6 +137,7 @@ export default function BuscadorPuntos() {
   const [resultados, setResultados] = useState([]);
   const [radio, setRadio] = useState(50);
   const [expandiendo, setExpandiendo] = useState(false);
+  const navigate = useNavigate();
 
   // Ubicación
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState('');
@@ -390,7 +393,15 @@ export default function BuscadorPuntos() {
       {!expandiendo && resultados.length > 0 && (
         <div className="centros-grid">
           {resultados.map((centro) => (
-            <div key={centro.id} className="centro-card">
+            <div
+              key={centro.id}
+              className="centro-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(`/ciudadano/registro-entrega?centro=${centro.id}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/ciudadano/registro-entrega?centro=${centro.id}`); }}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="centro-card-top">
                 <span className="centro-nombre">{centro.nombre}</span>
                 <span className="distancia-badge">{centro.distancia.toFixed(1)} km</span>
@@ -398,6 +409,7 @@ export default function BuscadorPuntos() {
               <p className="centro-direccion">
                 <span>📍</span> {centro.direccion}
               </p>
+              {/* Nombre de materiales en badges de color sólido */}
               <div className="centro-materiales">
                 {centro.materiales.map((m) => (
                   <span key={m} className={`material-tag ${m}`}>
@@ -406,11 +418,9 @@ export default function BuscadorPuntos() {
                 ))}
               </div>
               <div className="centro-footer">
-                <span className="centro-horario">Horario: {centro.horario}</span>
-                <span className={`centro-estado ${centro.estado}`}>
-                  <span className={`status-dot ${centro.estado}`} />
-                  {centro.estado === 'abierto' ? 'Abierto' : 'Cerrado'}
-                </span>
+                <span className="centro-horario">{centro.horario}</span>
+                {/* Solo punto de 6px, sin texto de estado */}
+                <span className={`status-dot ${centro.estado}`} />
               </div>
             </div>
           ))}

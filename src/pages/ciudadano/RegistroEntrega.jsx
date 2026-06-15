@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TIPOS_MATERIAL, obtenerCentros, nombreMaterial } from '../../services/ciudadanoService';
 
 export default function RegistroEntrega() {
-  const { addDelivery } = useAuth();
+  const { addDelivery, addNotification } = useAuth();
   const centros = obtenerCentros();
+  const [searchParams] = useSearchParams();
+  
 
   // ── States ──
   const [step, setStep] = useState('form'); // 'form' | 'tracking' | 'success'
   const [centroId, setCentroId] = useState('');
+  const [arrivedFromCentro, setArrivedFromCentro] = useState(false);
   const [materialesSeleccionados, setMaterialesSeleccionados] = useState(
     TIPOS_MATERIAL.reduce((acc, mat) => {
       acc[mat.id] = { selected: false, cantidad: '' };
@@ -75,6 +79,15 @@ export default function RegistroEntrega() {
 
     setStep('tracking');
     setTrackingStatus('enviada');
+    
+    // Notificación: Entrega enviada
+    addNotification({
+      id: Date.now(),
+      tipo: 'info',
+      mensaje: 'Tu entrega fue enviada al centro de acopio',
+      leida: false,
+      fecha: new Date()
+    });
   };
 
   // ── Tracking Simulator ──
@@ -84,6 +97,15 @@ export default function RegistroEntrega() {
     // Phase 1 -> 2: Revision (after 3s)
     const toRevision = setTimeout(() => {
       setTrackingStatus('revision');
+      
+      // Notificación: Entrega en revisión
+      addNotification({
+        id: Date.now(),
+        tipo: 'info',
+        mensaje: 'Tu entrega está en revisión',
+        leida: false,
+        fecha: new Date()
+      });
     }, 3000);
 
     // Phase 2 -> 3: Confirmada (after 6s total)
@@ -103,6 +125,7 @@ export default function RegistroEntrega() {
       const nuevaEntrega = {
         id: `del-${Date.now()}`,
         centroNombre: centroSel ? centroSel.nombre : 'Centro de Acopio',
+        receptorId: centroSel ? centroSel.email : '',
         fecha: new Date().toISOString(),
         materiales: matList,
         estado: 'confirmada',
@@ -111,10 +134,20 @@ export default function RegistroEntrega() {
       // Add to global shared history
       addDelivery(nuevaEntrega);
       setUltimaEntrega(nuevaEntrega);
+      
+      // Notificación: Entrega confirmada
+      addNotification({
+        id: Date.now() + 1,
+        tipo: 'success',
+        mensaje: '¡Tu entrega fue confirmada exitosamente!',
+        leida: false,
+        fecha: new Date()
+      });
 
       // Go to success screen after showing confirmation state briefly
       setTimeout(() => {
         setStep('success');
+        setTrackingStatus('enviada');
       }, 1500);
 
     }, 6000);
@@ -123,7 +156,7 @@ export default function RegistroEntrega() {
       clearTimeout(toRevision);
       clearTimeout(toConfirmada);
     };
-  }, [step, centroId, materialesSeleccionados, addDelivery]);
+  }, [step]);
 
   // ── Reset Flow ──
   const reiniciarFlujo = () => {
@@ -137,6 +170,23 @@ export default function RegistroEntrega() {
     setStep('form');
     setTrackingStatus('enviada');
     setUltimaEntrega(null);
+  };
+
+  // leer query param `centro` si viene desde Buscador
+  useEffect(() => {
+    const centroQuery = searchParams.get('centro');
+    if (centroQuery) {
+      setCentroId(centroQuery);
+      setArrivedFromCentro(true);
+    }
+  }, [searchParams]);
+
+  const selectedCentro = centros.find((c) => c.id === parseInt(centroId));
+
+  const handleCambiarCentro = () => {
+    setCentroId('');
+    setArrivedFromCentro(false);
+    setFiltroTexto('');
   };
 
   return (
@@ -183,48 +233,64 @@ export default function RegistroEntrega() {
                 1. Centro de Acopio Receptor
               </label>
 
-              {/* Text Search Bar */}
-              <input
-                type="text"
-                placeholder="Escribe para buscar centro por nombre o dirección..."
-                value={filtroTexto}
-                onChange={(e) => setFiltroTexto(e.target.value)}
-                className="search-input"
-              />
+              {arrivedFromCentro && selectedCentro ? (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--sp-4)', marginBottom: 'var(--sp-3)' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--gray-800)' }}>{selectedCentro.nombre}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--gray-500)' }}>{selectedCentro.direccion}</div>
+                  </div>
+                  <div>
+                    <button type="button" onClick={handleCambiarCentro} style={{ padding: 'var(--sp-2) var(--sp-3)', borderRadius: 'var(--r-md)', border: '1px solid var(--gray-200)', background: 'var(--white)', color: 'var(--eco-600)', cursor: 'pointer' }}>
+                      Cambiar centro
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Text Search Bar */}
+                  <input
+                    type="text"
+                    placeholder="Escribe para buscar centro por nombre o dirección..."
+                    value={filtroTexto}
+                    onChange={(e) => setFiltroTexto(e.target.value)}
+                    className="search-input"
+                  />
 
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                fontSize: '0.72rem', 
-                color: 'var(--gray-400)',
-                fontWeight: '500',
-                marginBottom: 'var(--sp-2)'
-              }}>
-                <span>Filtro inteligente por materiales y texto</span>
-                <span>{centrosFiltrados.length} centro(s) de {centros.length}</span>
-              </div>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    fontSize: '0.72rem', 
+                    color: 'var(--gray-400)',
+                    fontWeight: '500',
+                    marginBottom: 'var(--sp-2)'
+                  }}>
+                    <span>Filtro inteligente por materiales y texto</span>
+                    <span>{centrosFiltrados.length} centro(s) de {centros.length}</span>
+                  </div>
 
-              <select
-                value={centroId}
-                onChange={(e) => setCentroId(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: 'var(--sp-3) var(--sp-4)',
-                  borderRadius: 'var(--r-md)',
-                  border: '1px solid var(--gray-200)',
-                  background: 'var(--white)',
-                  color: 'var(--gray-800)',
-                  outline: 'none',
-                  transition: 'border-color var(--ease-fast)'
-                }}
-              >
-                <option value="">Selecciona un centro...</option>
-                {centrosFiltrados.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre} — {c.direccion}
-                  </option>
-                ))}
-              </select>
+                  <select
+                    value={centroId}
+                    onChange={(e) => setCentroId(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: 'var(--sp-3) var(--sp-4)',
+                      borderRadius: 'var(--r-md)',
+                      border: '1px solid var(--gray-200)',
+                      background: 'var(--white)',
+                      color: 'var(--gray-800)',
+                      outline: 'none',
+                      transition: 'border-color var(--ease-fast)'
+                    }}
+                  >
+                    <option value="">Selecciona un centro...</option>
+                    {centrosFiltrados.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre} — {c.direccion}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
             </div>
 
             {/* Selection of materials & quantities */}
@@ -253,8 +319,9 @@ export default function RegistroEntrega() {
                         gap: 'var(--sp-4)',
                         padding: 'var(--sp-3) var(--sp-4)',
                         border: '1px solid var(--gray-200)',
+                        borderLeft: state.selected ? '3px solid var(--eco-500)' : '3px solid transparent',
                         borderRadius: 'var(--r-lg)',
-                        background: state.selected ? 'var(--eco-50)' : 'var(--white)',
+                        background: 'var(--white)',
                         transition: 'all var(--ease-base)'
                       }}
                     >

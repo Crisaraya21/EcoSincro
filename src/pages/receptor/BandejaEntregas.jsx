@@ -7,7 +7,7 @@ import {
 import './receptor.css';
 
 export default function BandejaEntregas() {
-  const { currentUser, deliveries } = useAuth();
+  const { currentUser, deliveries, addNotification } = useAuth();
   
   // Filtrar entregas que son para este receptor
   const entregas = (deliveries || []).filter(e => e.receptorId === currentUser?.email);
@@ -36,6 +36,16 @@ export default function BandejaEntregas() {
     );
     
     setEntregasLocal(updated);
+    
+    // Notificación: Entrega aprobada
+    addNotification({
+      id: Date.now(),
+      tipo: 'success',
+      mensaje: `Aprobaste la entrega de ${selectedEntrega.ciudadanoNombre}`,
+      leida: false,
+      fecha: new Date()
+    });
+    
     setModal(null);
     setSelectedEntrega(null);
   };
@@ -51,6 +61,16 @@ export default function BandejaEntregas() {
     );
     
     setEntregasLocal(updated);
+    
+    // Notificación: Entrega rechazada
+    addNotification({
+      id: Date.now(),
+      tipo: 'warning',
+      mensaje: `Rechazaste la entrega de ${selectedEntrega.ciudadanoNombre}: ${motivoRechazo}`,
+      leida: false,
+      fecha: new Date()
+    });
+    
     setModal(null);
     setSelectedEntrega(null);
     setMotivoRechazo('');

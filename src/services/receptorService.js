@@ -4,7 +4,7 @@
 
 // ── Tipos de material (compartido con ciudadano) ──
 export const TIPOS_MATERIAL = [
-  { id: 'plastico',         nombre: 'Plástico',                   icono: '🧴' },
+  { id: 'plastico',         nombre: 'Plástico',                   icono: '🥤' },
   { id: 'vidrio',           nombre: 'Vidrio',                     icono: '🫙' },
   { id: 'carton',           nombre: 'Cartón',                     icono: '📦' },
   { id: 'no_convencional',  nombre: 'Residuos No Convencionales', icono: '⚠️' },

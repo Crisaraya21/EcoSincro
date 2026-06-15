@@ -30,6 +30,7 @@ export default function HistorialEntregas() {
               style={{
                 background: 'var(--white)',
                 border: '1px solid var(--gray-200)',
+                borderLeft: '3px solid var(--eco-500)',
                 borderRadius: 'var(--r-xl)',
                 padding: 'var(--sp-6)',
                 boxShadow: 'var(--shadow-xs)',
@@ -65,30 +66,29 @@ export default function HistorialEntregas() {
                   </span>
                 </div>
 
-                <span
-                  className="status-badge"
-                  style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    color: 'var(--success)',
-                    background: 'var(--eco-50)',
-                    padding: 'var(--sp-1) var(--sp-3)',
-                    borderRadius: 'var(--r-full)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 'var(--sp-1)'
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: 'var(--success)'
-                    }}
-                  />
-                  Aprobado
-                </span>
+                {(() => {
+                  const estado = (delivery.estado || '').toLowerCase();
+                  if (estado === 'confirmada' || estado === 'aprobado') {
+                    return (
+                      <span className="historial-status-approved">
+                        Aprobado
+                      </span>
+                    );
+                  }
+
+                  if (estado === 'rechazado') {
+                    return (
+                      <span className="historial-status-rejected">
+                        Rechazado
+                      </span>
+                    );
+                  }
+
+                  // Fallback: mostrar texto capitalizado
+                  return (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--gray-500)' }}>{String(delivery.estado || '').toUpperCase()}</span>
+                  );
+                })()}
               </div>
 
               {/* Card body — materials */}
@@ -145,6 +145,13 @@ export default function HistorialEntregas() {
                   ))}
                 </div>
               </div>
+
+              {/* Motivo de rechazo — bloque neutro sin rojo agresivo */}
+              {delivery.estado && delivery.estado.toLowerCase() === 'rechazado' && delivery.motivoRechazo && (
+                <div className="rechazo-block">
+                  <strong>Motivo del rechazo:</strong> {delivery.motivoRechazo}
+                </div>
+              )}
             </div>
           ))}
         </div>

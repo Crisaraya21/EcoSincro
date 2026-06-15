@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, NavLink, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import NotificationCenter from './components/NotificationCenter';
 import RoleSelector from './pages/auth/RoleSelector';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -10,6 +11,7 @@ import RegisterEmpresa from './pages/auth/RegisterEmpresa';
 import BuscadorPuntos from './pages/ciudadano/BuscadorPuntos';
 import RegistroEntrega from './pages/ciudadano/RegistroEntrega';
 import HistorialEntregas from './pages/ciudadano/HistorialEntregas';
+import GuiaClasificacion from './pages/ciudadano/GuiaClasificacion';
 import DashboardReceptor from './pages/receptor/DashboardReceptor';
 import GestionMateriales from './pages/receptor/GestionMateriales';
 import BandejaEntregas from './pages/receptor/BandejaEntregas';
@@ -35,7 +37,9 @@ function CiudadanoLayout() {
         <>
             <nav className="navbar" id="main-nav">
                 <div className="navbar-brand">
-                    <span>EcoSincro</span>
+                    <span style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 800, fontSize: '1.1rem' }}>
+                        EcoSincro
+                    </span>
                 </div>
 
                 <div className="navbar-links">
@@ -57,9 +61,16 @@ function CiudadanoLayout() {
                     >
                         Historial
                     </NavLink>
+                    <NavLink
+                        to="/ciudadano/guia"
+                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    >
+                        Guía
+                    </NavLink>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
+                    <NotificationCenter />
                     <button
                         className="btn-theme"
                         onClick={toggleTheme}
@@ -129,6 +140,7 @@ function ReceptorLayout() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
+                    <NotificationCenter />
                     <button
                         className="btn-theme"
                         onClick={toggleTheme}
@@ -183,6 +195,7 @@ function EmpresaLayout() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
+                    <NotificationCenter />
                     <button
                         className="btn-theme"
                         onClick={toggleTheme}
@@ -231,6 +244,7 @@ export default function App() {
                     <Route path="buscar" element={<BuscadorPuntos />} />
                     <Route path="registro-entrega" element={<RegistroEntrega />} />
                     <Route path="historial" element={<HistorialEntregas />} />
+                    <Route path="guia" element={<GuiaClasificacion />} />
                 </Route>
 
                 {/* Receptor Routes */}

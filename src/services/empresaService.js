@@ -14,7 +14,7 @@ export const SECTORES_PRODUCTIVOS = [
 ];
 
 export const TIPOS_RESIDUO = [
-    { id: 'plastico',        nombre: 'Plástico',                   icono: '🧴', unidad: 'kg' },
+    { id: 'plastico',        nombre: 'Plástico',                   icono: '🥤', unidad: 'kg' },
     { id: 'vidrio',          nombre: 'Vidrio',                     icono: '🫙', unidad: 'kg' },
     { id: 'carton',          nombre: 'Cartón / Papel',             icono: '📦', unidad: 'kg' },
     { id: 'metal',           nombre: 'Metal / Chatarra',           icono: '🔩', unidad: 'kg' },

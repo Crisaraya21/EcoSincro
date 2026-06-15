@@ -85,7 +85,7 @@ export default function DashboardReceptor() {
           </a>
           
           <a href="/receptor/materiales" className="action-card">
-            <div className="action-icon">🧴</div>
+            <div className="action-icon">🥤</div>
             <div className="action-content">
               <h3>Gestionar Materiales</h3>
               <p>Configura qué materiales aceptas</p>
