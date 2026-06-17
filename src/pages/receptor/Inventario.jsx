@@ -1,33 +1,41 @@
-import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { TIPOS_MATERIAL, iconoMaterial, nombreMaterial } from '../../services/receptorService';
 import './receptor.css';
 
 export default function Inventario() {
-  const { currentUser } = useAuth();
-  const [inventario, setInventario] = useState(() => {
-    const saved = localStorage.getItem('eco-inventario-' + currentUser?.email);
-    if (saved) return JSON.parse(saved);
-    
-    // Mock por defecto
-    return {
-      plastico: 127.5,
-      vidrio: 85.0,
-      carton: 156.8,
-      no_convencional: 12.3
-    };
-  });
+  const { currentUser, deliveries } = useAuth();
+
+  // Calcular inventario desde entregas aprobadas de este receptor
+  const inventario = (deliveries || [])
+    .filter(e => e.receptorId === currentUser?.email && e.estado === 'aprobado')
+    .reduce((acc, entrega) => {
+      (entrega.materiales || []).forEach(({ tipo, cantidad }) => {
+        acc[tipo] = (acc[tipo] || 0) + Number(cantidad);
+      });
+      return acc;
+    }, {});
 
   const totalMateriales = Object.values(inventario).reduce((a, b) => a + b, 0);
-
-  // Calcular porcentaje máximo para la barra de progreso
   const maxValue = Math.max(...Object.values(inventario), 1);
 
   return (
     <div className="inventario-page">
       <h1>Inventario Acumulado</h1>
 
-      {/* Total Summary */}
+      {totalMateriales === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: 'var(--sp-8)',
+          color: 'var(--gray-500)',
+          background: 'var(--white)',
+          borderRadius: 'var(--r-md)',
+          border: '1px solid var(--gray-200)',
+          marginBottom: 'var(--sp-6)'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: 'var(--sp-3)' }}>📦</div>
+          <p style={{ fontWeight: '600' }}>Aún no hay materiales registrados en tu inventario.</p>
+        </div>
+      )}
       <div style={{
         padding: 'var(--sp-4)',
         background: 'linear-gradient(135deg, var(--eco-600), var(--eco-800))',

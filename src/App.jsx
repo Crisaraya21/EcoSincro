@@ -16,9 +16,11 @@ import DashboardReceptor from './pages/receptor/DashboardReceptor';
 import GestionMateriales from './pages/receptor/GestionMateriales';
 import BandejaEntregas from './pages/receptor/BandejaEntregas';
 import Inventario from './pages/receptor/Inventario';
+import RedContactos from './pages/receptor/RedContactos';
 import RegistroResiduos from './pages/empresa/RegistroResiduos';
 import BuscarReceptorEmpresa from './pages/empresa/BuscarReceptorEmpresa';
 import ReporteSostenibilidad from './pages/empresa/ReporteSostenibilidad';
+import CumplimientoNormativo from './pages/empresa/CumplimientoNormativo';
 import './App.css';
 
 /* ── Protected wrapper with role validation ── */
@@ -137,6 +139,12 @@ function ReceptorLayout() {
                     >
                         Inventario
                     </NavLink>
+                    <NavLink
+                        to="/receptor/contactos"
+                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    >
+                        Red de Contactos
+                    </NavLink>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
@@ -191,6 +199,9 @@ function EmpresaLayout() {
                     </NavLink>
                     <NavLink to="/empresa/reporte" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Reporte de Sostenibilidad
+                    </NavLink>
+                    <NavLink to="/empresa/cumplimiento" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Cumplimiento Normativo
                     </NavLink>
                 </div>
 
@@ -263,6 +274,7 @@ export default function App() {
                     <Route path="bandeja" element={<BandejaEntregas />} />
                     <Route path="materiales" element={<GestionMateriales />} />
                     <Route path="inventario" element={<Inventario />} />
+                    <Route path="contactos" element={<RedContactos />} />
                 </Route>
 
                 {/* Empresa Routes */}
@@ -280,6 +292,7 @@ export default function App() {
                     <Route path="residuos" element={<RegistroResiduos />} />
                     <Route path="receptores" element={<BuscarReceptorEmpresa />} />
                     <Route path="reporte" element={<ReporteSostenibilidad />} />
+                    <Route path="cumplimiento" element={<CumplimientoNormativo />} />
                 </Route>
 
                 {/* Default redirect */}

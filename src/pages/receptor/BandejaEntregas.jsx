@@ -7,13 +7,10 @@ import {
 import './receptor.css';
 
 export default function BandejaEntregas() {
-  const { currentUser, deliveries, addNotification } = useAuth();
+  const { currentUser, deliveries, addNotification, updateDelivery } = useAuth();
   
-  // Filtrar entregas que son para este receptor
-  const entregas = (deliveries || []).filter(e => e.receptorId === currentUser?.email);
-  
-  // Estado local para actualizaciones UI
-  const [entregasLocal, setEntregasLocal] = useState(entregas);
+  // Filtrar entregas que son para este receptor (datos globales)
+  const entregasLocal = (deliveries || []).filter(e => e.receptorId === currentUser?.email);
 
   const [filtro, setFiltro] = useState('pendientes'); // 'pendientes' | 'todas'
   const [selectedEntrega, setSelectedEntrega] = useState(null);
@@ -28,16 +25,7 @@ export default function BandejaEntregas() {
   // Handle approval
   const handleAprobar = () => {
     if (!selectedEntrega) return;
-    
-    const updated = entregasLocal.map(e =>
-      e.id === selectedEntrega.id
-        ? { ...e, estado: 'aprobado' }
-        : e
-    );
-    
-    setEntregasLocal(updated);
-    
-    // Notificación: Entrega aprobada
+    updateDelivery(selectedEntrega.id, { estado: 'aprobado' });
     addNotification({
       id: Date.now(),
       tipo: 'success',
@@ -45,7 +33,6 @@ export default function BandejaEntregas() {
       leida: false,
       fecha: new Date()
     });
-    
     setModal(null);
     setSelectedEntrega(null);
   };
@@ -53,16 +40,7 @@ export default function BandejaEntregas() {
   // Handle rejection
   const handleRechazar = () => {
     if (!selectedEntrega || !motivoRechazo.trim()) return;
-    
-    const updated = entregasLocal.map(e =>
-      e.id === selectedEntrega.id
-        ? { ...e, estado: 'rechazado', motivoRechazo }
-        : e
-    );
-    
-    setEntregasLocal(updated);
-    
-    // Notificación: Entrega rechazada
+    updateDelivery(selectedEntrega.id, { estado: 'rechazado', motivoRechazo });
     addNotification({
       id: Date.now(),
       tipo: 'warning',
@@ -70,7 +48,6 @@ export default function BandejaEntregas() {
       leida: false,
       fecha: new Date()
     });
-    
     setModal(null);
     setSelectedEntrega(null);
     setMotivoRechazo('');

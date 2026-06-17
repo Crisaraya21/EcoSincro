@@ -154,6 +154,12 @@ export function AuthProvider({ children }) {
     setDeliveries((prev) => [delivery, ...prev]);
   };
 
+  const updateDelivery = (id, changes) => {
+    setDeliveries((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, ...changes } : d))
+    );
+  };
+
   const getReceptores = () => {
     return users.filter((u) => u.rol === 'receptor');
   };
@@ -195,6 +201,7 @@ export function AuthProvider({ children }) {
             toggleTheme,
             deliveries,
             addDelivery,
+            updateDelivery,
             notifications,
             addNotification,
             markAsRead,
