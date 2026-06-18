@@ -12,6 +12,7 @@ import BuscadorPuntos from './pages/ciudadano/BuscadorPuntos';
 import RegistroEntrega from './pages/ciudadano/RegistroEntrega';
 import HistorialEntregas from './pages/ciudadano/HistorialEntregas';
 import GuiaClasificacion from './pages/ciudadano/GuiaClasificacion';
+import ImpactoAmbiental from './pages/ciudadano/ImpactoAmbiental';
 import DashboardReceptor from './pages/receptor/DashboardReceptor';
 import GestionMateriales from './pages/receptor/GestionMateriales';
 import BandejaEntregas from './pages/receptor/BandejaEntregas';
@@ -68,6 +69,12 @@ function CiudadanoLayout() {
                         className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                     >
                         Guía
+                    </NavLink>
+                    <NavLink
+                        to="/ciudadano/impacto"
+                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    >
+                        Mi Impacto
                     </NavLink>
                 </div>
 
@@ -256,6 +263,7 @@ export default function App() {
                     <Route path="registro-entrega" element={<RegistroEntrega />} />
                     <Route path="historial" element={<HistorialEntregas />} />
                     <Route path="guia" element={<GuiaClasificacion />} />
+                    <Route path="impacto" element={<ImpactoAmbiental />} />
                 </Route>
 
                 {/* Receptor Routes */}
